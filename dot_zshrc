@@ -1,1 +1,29 @@
-eval "$(starship init zsh)"
+#!/usr/bin/env zsh
+
+# zsh performance check
+: ${ZSH_PROFILE_STARTUP:=false}
+
+if [[ "$ZSH_PROFILE_STARTUP" == "true" ]]; then
+  zmodload zsh/zprof
+  zmodload zsh/datetime
+  setopt PROMPT_SUBST
+  PS4='+$EPOCHREALTIME %N:%i> '
+
+  logfile=$(mktemp zsh_profile.XXXXXXXX)
+  echo "Logging to $logfile"
+  exec 3>&2 2>$logfile
+
+  setopt XTRACE
+fi
+
+# inits
+if command -v "starship" &>/dev/null; then
+  eval "$(starship init zsh)"
+fi
+
+# zsh performance check end
+if [[ "$ZSH_PROFILE_STARTUP" == "true" ]]; then
+  zprof > "$HOME/.zsh_profile.dump"
+  unsetopt XTRACE
+  exec 2>&3 3>&-
+fi
