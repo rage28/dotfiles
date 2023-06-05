@@ -4,7 +4,7 @@
 set -e
 
 # vars
-declare -r DOTPWD=$(pwd -P)
+declare -r DOTFILES="~/.dotfiles"
 
 clear
 
@@ -19,14 +19,20 @@ command -v "nix" &>/dev/null || {
   printf "\n\nInstalling nix\n\n"
   curl -L https://nixos.org/nix/install | sh
 }
+source /etc/bashrc
 
 # nix darwin
 command -v "darwin-rebuild" &>/dev/null || {
   printf "\n\nInstalling nix-darwin\n\n"
+  
+  pushd ${DOTFILES} &>/dev/null
+
   nix-build https://github.com/LnL7/nix-darwin/archive/master.tar.gz -A installer
-  ./${DOTPWD}/result/bin/darwin-installer
+  .${DOTPWD}/result/bin/darwin-installer
 
   # update rc after nix-darwin to wait for /etc/static
   source /etc/bashrc 
   darwin-rebuild switch
+
+  popd &>/dev/null
 }
