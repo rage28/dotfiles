@@ -5,6 +5,7 @@ set -e
 
 # vars
 declare -r DOTFILES="~/.dotfiles"
+source /etc/bashrc
 
 clear
 
@@ -18,8 +19,8 @@ command -v "chezmoi" &>/dev/null || {
 command -v "nix" &>/dev/null || {
   printf "\n\nInstalling nix\n\n"
   curl -L https://nixos.org/nix/install | sh
+  source /etc/bashrc
 }
-source /etc/bashrc
 
 # nix darwin
 command -v "darwin-rebuild" &>/dev/null || {
